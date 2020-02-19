@@ -88,7 +88,9 @@
         (seq tags) (str "\n----\n" "lsp: " tags)))))
 
 (defn did-open [uri text]
-  (when-let [new-ns (and (string/blank? text) (uri->namespace uri))]
+  (when-let [new-ns (and (not (get-in @db/db [:settings "disable-snippets"]))
+                         (string/blank? text)
+                         (uri->namespace uri))]
     (let [new-text (format "(ns %s)" new-ns)
           changes [{:text-document {:version (get-in @db/db [:documents uri :v] 0) :uri uri}
                     :edits [{:range (shared/->range {:row 1 :end-row 1 :col 1 :end-col 1})
